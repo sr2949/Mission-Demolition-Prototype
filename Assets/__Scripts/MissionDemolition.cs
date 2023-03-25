@@ -125,7 +125,7 @@ public class MissionDemolition : MonoBehaviour
 
 	}
 
-	public void RestartGame()
+	public void RestartLevel()
 	{
 		level = level;
 		TimeupCanvas.gameObject.SetActive(false);
