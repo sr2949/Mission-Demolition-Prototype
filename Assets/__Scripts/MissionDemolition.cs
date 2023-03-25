@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public enum GameMode
 {
@@ -18,28 +19,41 @@ public class MissionDemolition : MonoBehaviour
 	public Text uitLevel; //  ссылка на объект UIText_Level
 	public Text uitShots; // ссылка на объект UIText_Shots
 	public Text uitButton; // ссылка на дочерний объект Text в UIButton_View
+	public Text timerText; // ссылка на дочерний объект Text в UIButton_View
 	public Vector3 castlePos; // местоположение замка
 	public GameObject[] castles; // массив замков
+	public TextMeshProUGUI RestartButton;
+	public TextMeshProUGUI scoreText;
+	public TextMeshProUGUI currentscoreText;
+
 
 	[Header("Set Dynamically")]
 	public int level; // текущий уровень
 	public int levelMax; // количество уровней
 	public int shotsTaken;
+	public float score;
 	public GameObject castle; // текущий замок
 	public GameMode mode = GameMode.idle;
 	public string showing = "Show Slingshot"; // режим FollowCam
+	public Canvas scoreCanvas;
+	public Canvas TimeupCanvas;
+	private float timerDuration = 100f;
+	private float currentTimerValue;
+
+
 
 	void Start()
 	{
 		S = this; // определить объект-одиночку
-
 		level = 0;
+		score = 0;
 		levelMax = castles.Length;
 		StartLevel();
 	}
 
 	void StartLevel()
 	{
+		currentTimerValue = timerDuration;
 		// уничтожить прежний замок, если он существует
 		if (castle != null)
 		{
@@ -75,10 +89,26 @@ public class MissionDemolition : MonoBehaviour
 		// показать данные в элементах пользовательского интерфейса
 		uitLevel.text = "Level: " + (level + 1) + " of " + levelMax;
 		uitShots.text = "Shots Taken: " + shotsTaken;
+		scoreText.text = score.ToString("F0");
+		currentscoreText.text = "Current Score: " + score.ToString("F0");
+		timerText.text = "Timer: " + currentTimerValue.ToString("F0");
 	}
 
 	void Update()
 	{
+		if (level != 1)
+		{
+			currentTimerValue -= Time.deltaTime;
+		}
+		if (currentTimerValue <= 0)
+		{
+			TimeupCanvas.gameObject.SetActive(true);
+		}
+
+		if (level != 1)
+		{
+			score += Time.deltaTime;
+		}
 		UpdateGUI();
 
 		// проверить завершение уровня
@@ -91,16 +121,41 @@ public class MissionDemolition : MonoBehaviour
 			// начать новый уровень через 2 секунды
 			Invoke("NextLevel", 2f);
 		}
+
+
+	}
+
+	public void RestartGame()
+	{
+		level = level;
+		TimeupCanvas.gameObject.SetActive(false);
+		score = 0;
+		StartLevel();
+	}
+	public void PlayAgain()
+	{
+		level = 0;
+		TimeupCanvas.gameObject.SetActive(false);
+		scoreCanvas.gameObject.SetActive(false);
+		score = 0;
+		StartLevel();
 	}
 
 	void NextLevel()
 	{
 		level++;
-		if (level == levelMax)
+		if (level == 1)
 		{
-			level = 0;
+			//level = 0;
+			scoreCanvas.gameObject.SetActive(true);
 		}
-		StartLevel();
+		else
+		{
+			currentTimerValue = timerDuration;
+			StartLevel();
+
+		}
+
 	}
 
 	public void SwitchView(string eView = "")
