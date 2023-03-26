@@ -37,7 +37,7 @@ public class MissionDemolition : MonoBehaviour
 	public string showing = "Show Slingshot"; // режим FollowCam
 	public Canvas scoreCanvas;
 	public Canvas TimeupCanvas;
-	private float timerDuration = 100f;
+	private float timerDuration = 60f;
 	private float currentTimerValue;
 
 
@@ -96,7 +96,7 @@ public class MissionDemolition : MonoBehaviour
 
 	void Update()
 	{
-		if (level != 1)
+		if (level != levelMax)
 		{
 			currentTimerValue -= Time.deltaTime;
 		}
@@ -105,7 +105,7 @@ public class MissionDemolition : MonoBehaviour
 			TimeupCanvas.gameObject.SetActive(true);
 		}
 
-		if (level != 1)
+		if (level != levelMax)
 		{
 			score += Time.deltaTime;
 		}
@@ -129,7 +129,6 @@ public class MissionDemolition : MonoBehaviour
 	{
 		level = level;
 		TimeupCanvas.gameObject.SetActive(false);
-		score = 0;
 		StartLevel();
 	}
 	public void PlayAgain()
@@ -144,7 +143,7 @@ public class MissionDemolition : MonoBehaviour
 	void NextLevel()
 	{
 		level++;
-		if (level == 1)
+		if (level == levelMax)
 		{
 			//level = 0;
 			scoreCanvas.gameObject.SetActive(true);
